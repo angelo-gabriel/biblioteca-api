@@ -1,40 +1,30 @@
 import { PrismaClient } from '@prisma/client'
 import { v4 as uuidv4 } from 'uuid'
+import { faker } from '@faker-js/faker'
 
 const prisma = new PrismaClient()
 
 async function main() {
-  const author1 = await prisma.author.create({
-    data: {
+  for (let i = 0; i < 10; i++) {
+    const authorId = uuidv4()
+    const authorName = faker.person.fullName()
+
+    const booksData = Array.from({ length: 20 }).map(() => ({
       id: uuidv4(),
-      name: 'Machado de Assis',
-      books: {
-        create: [
-          {
-            id: uuidv4(),
-            title: 'Dom Casmurro',
-          },
-          {
-            id: uuidv4(),
-            title: 'O Alienista',
-          },
-        ],
-      },
-    },
-  })
-  const author2 = await prisma.author.create({
-    data: {
-      id: uuidv4(),
-      name: 'Stephen King',
-      books: {
-        create: {
-          id: uuidv4(),
-          title: 'The Shining',
+      title: faker.lorem.words({ min: 2, max: 5 }),
+    }))
+
+    await prisma.author.create({
+      data: {
+        id: authorId,
+        name: authorName,
+        books: {
+          create: booksData,
         },
       },
-    },
-  })
-  console.log({ author1, author2 })
+    })
+  }
+  console.log('Authors and books generated with success.')
 }
 
 main()
