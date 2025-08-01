@@ -13,6 +13,6 @@ Esta é uma API RESTful para gerenciamento de **livros** e **autores**, constru�
 ## 🚀 Instalação
 
 ```bash
-git clone https://github.com/seu-usuario/api-biblioteca.git
-cd api-biblioteca
+git clone https://github.com/angelo-gabriel/biblioteca-api.git
+cd biblioteca-api
 npm install
