@@ -1,5 +1,8 @@
-import { app } from './app'
+import { buildServer } from './app'
 
-app.listen({ port: 3333 }).then(() => {
-  console.log('Server is running on port 3333')
-})
+buildServer()
+  .then((app) => app.listen({ port: 3333 }))
+  .catch((err: unknown) => {
+    console.error('Error starting server:', err)
+    process.exit(1)
+  })

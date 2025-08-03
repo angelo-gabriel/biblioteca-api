@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify'
 import { listAuthors, createAuthor } from '../controllers/authorController'
-import { authorSchema } from '../schemas/authorSchema'
+import { authorResponseSchema, authorSchema } from '../schemas/authorSchema'
 import { z } from 'zod'
 
 export async function authorRoutes(app: FastifyInstance): Promise<void> {
@@ -19,7 +19,7 @@ export async function authorRoutes(app: FastifyInstance): Promise<void> {
     schema: {
       body: authorSchema,
       response: {
-        201: authorSchema,
+        201: authorResponseSchema,
       },
       tags: ['Authors'],
       summary: 'Create a new author',

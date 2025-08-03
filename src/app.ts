@@ -9,14 +9,18 @@ import { registerSwagger } from './plugins/swagger'
 import { registerCors } from './plugins/cors'
 import { routes } from './routes/index'
 
-export const app = fastify().withTypeProvider<ZodTypeProvider>()
+export async function buildServer() {
+  const app = fastify().withTypeProvider<ZodTypeProvider>()
+  app.setValidatorCompiler(validatorCompiler)
+  app.setSerializerCompiler(serializerCompiler)
 
-app.setValidatorCompiler(validatorCompiler)
-app.setSerializerCompiler(serializerCompiler)
+  await registerCors(app)
+  await registerSwagger(app)
 
-await registerCors(app)
-await registerSwagger(app)
+  await app.register(prismaPlugin)
+  await app.register(routes)
 
-await app.register(prismaPlugin)
+  return app
+}
 
-await app.register(routes)
+buildServer()

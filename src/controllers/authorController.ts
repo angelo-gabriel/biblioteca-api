@@ -18,11 +18,9 @@ export async function createAuthor(
   reply: FastifyReply
 ) {
   const { name } = request.body
+
   const author = await prisma.author.create({
-    data: {
-      id: uuidv4(),
-      name,
-    },
+    data: { name },
   })
   reply.code(201).send(author)
 }
