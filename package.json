@@ -8,9 +8,7 @@
     "dev": "nodemon",
     "build": "tsc",
     "start": "node dist/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "prisma": {
+    "test": "echo \"Error: no test specified\" && exit 1",
     "seed": "ts-node prisma/seed.ts"
   },
   "keywords": [],

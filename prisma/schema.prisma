@@ -14,14 +14,40 @@ datasource db {
 }
 
 model Author {
-  id    String @id @default(dbgenerated())
+  id    String @id @default(uuid())
   name  String @unique
   books Book[]
 }
 
 model Book {
-  id       String @id @default(dbgenerated())
-  title    String
-  authorId String
-  author   Author @relation(fields: [authorId], references: [id])
+  id        String     @id @default(uuid())
+  title     String
+  exemplars Exemplar[]
+  authorId  String
+  author    Author     @relation(fields: [authorId], references: [id])
+}
+
+model Exemplar {
+  id        String  @id @default(uuid())
+  bookId    String
+  book      Book    @relation(fields: [bookId], references: [id])
+  available Boolean @default(true)
+  loans     Loan[]
+}
+
+model User {
+  id    String @id @default(uuid())
+  name  String
+  email String @unique
+  loans Loan[]
+}
+
+model Loan {
+  id         String    @id @default(uuid())
+  exemplarId String
+  exemplar   Exemplar  @relation(fields: [exemplarId], references: [id])
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
+  loanedAt   DateTime  @default(now())
+  returnedAt DateTime?
 }

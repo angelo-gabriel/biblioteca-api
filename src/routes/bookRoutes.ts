@@ -1,13 +1,17 @@
 import { FastifyInstance } from 'fastify'
 import { listBooks, createBook } from '../controllers/bookController'
-import { bookResponseSchema, bookSchema } from '../schemas/bookSchema'
+import {
+  bookListSchema,
+  bookResponseSchema,
+  bookSchema,
+} from '../schemas/bookSchema'
 import z from 'zod'
 
 export async function bookRoutes(app: FastifyInstance): Promise<void> {
   app.get('/books', {
     schema: {
       response: {
-        200: z.array(bookResponseSchema),
+        200: z.array(bookListSchema),
       },
       tags: ['Books'],
       summary: 'List all books',
