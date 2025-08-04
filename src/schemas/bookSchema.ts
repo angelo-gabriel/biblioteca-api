@@ -11,14 +11,19 @@ export const bookListSchema = z.object({
 // Schema para a criação
 export const bookSchema = z.object({
   title: z.string().min(1),
-  authorName: z.string().min(1),
-  numberOfExemplars: z.number().int().min(1, 'Must have at least 1 exemplar.'),
+  authorId: z.string().uuid(),
+})
+
+export const createBookSchema = bookSchema.extend({
+  exemplars: z.array(exemplarResponseSchema).optional(),
+  authorName: z.string().optional(),
 })
 
 // Schema de resposta para a criação
 export const bookResponseSchema = bookSchema.extend({
   id: z.string().uuid(),
   exemplars: z.array(exemplarResponseSchema),
+  numberOfExemplars: z.number().int().nonnegative(),
 })
 
 export type BookInput = z.infer<typeof bookSchema>

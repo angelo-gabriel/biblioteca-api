@@ -10,13 +10,13 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"
+  url      = env("DATABASE_URL")
 }
 
 model Author {
   id    String @id @default(uuid())
   name  String @unique
-  books Book[]
+  books Book[] @relation("AuthorBooks")
 }
 
 model Book {
@@ -24,13 +24,13 @@ model Book {
   title     String
   exemplars Exemplar[]
   authorId  String
-  author    Author     @relation(fields: [authorId], references: [id])
+  author    Author     @relation("AuthorBooks", fields: [authorId], references: [id], onDelete: Cascade)
 }
 
 model Exemplar {
   id        String  @id @default(uuid())
   bookId    String
-  book      Book    @relation(fields: [bookId], references: [id])
+  book      Book    @relation(fields: [bookId], references: [id], onDelete: Cascade)
   available Boolean @default(true)
   loans     Loan[]
 }
@@ -45,7 +45,7 @@ model User {
 model Loan {
   id         String    @id @default(uuid())
   exemplarId String
-  exemplar   Exemplar  @relation(fields: [exemplarId], references: [id])
+  exemplar   Exemplar  @relation(fields: [exemplarId], references: [id], onDelete: Cascade)
   userId     String
   user       User      @relation(fields: [userId], references: [id])
   loanedAt   DateTime  @default(now())

@@ -1,8 +1,8 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { BookInput, bookSchema } from '../schemas/bookSchema'
+import { BookInput, bookSchema, createBookSchema } from '../schemas/bookSchema'
 import { v4 as uuidv4 } from 'uuid'
 import { PrismaClient, Book, Author } from '@prisma/client'
-import z from 'zod'
+import z, { number } from 'zod'
 
 const prisma = new PrismaClient()
 
@@ -45,26 +45,29 @@ export async function listBooks(
 
 export async function createBook(request: FastifyRequest, reply: FastifyReply) {
   try {
-    const { title, authorName, numberOfExemplars } = bookSchema.parse(
-      request.body
-    )
+    const { title, authorId, exemplars } = createBookSchema.parse(request.body)
 
     const author = await prisma.author.findUnique({
-      where: { name: authorName },
+      where: { id: authorId },
     })
 
     if (!author) {
       return reply.code(404).send({ message: 'Author not found.' })
     }
 
+    const exemplarsToCreate = [...Array(exemplars || 1)].map(() => ({
+      id: uuidv4(),
+      available: true,
+    }))
+
     const newBook = await prisma.book.create({
       data: {
         title,
-        authorId: author.id,
+        author: {
+          connect: { id: authorId },
+        },
         exemplars: {
-          createMany: {
-            data: new Array(numberOfExemplars).fill({}),
-          },
+          create: exemplarsToCreate,
         },
       },
       include: {
@@ -76,9 +79,9 @@ export async function createBook(request: FastifyRequest, reply: FastifyReply) {
     const formattedBook = {
       id: newBook.id,
       title: newBook.title,
-      authorName: newBook.author.name,
+      authorId: newBook.author.id,
       exemplars: newBook.exemplars,
-      numberOfExemplars: numberOfExemplars,
+      numberOfExemplars: newBook.exemplars.length,
     }
 
     reply.code(201).send(formattedBook)
